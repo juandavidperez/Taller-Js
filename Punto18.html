@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lista dinámica de tareas</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .tarea { display: flex; align-items: center; gap: 12px; padding: 8px; border-bottom: 1px solid #eee; }
+    .titulo { flex: 1; }
+    .estado { font-size: 0.9rem; padding: 4px 8px; border-radius: 12px; background:#f0f0f0; }
+    .completada .titulo { text-decoration: line-through; color: #888; }
+    button { cursor: pointer; }
+    .controls { display:flex; gap:8px; }
+  </style>
+</head>
+<body>
+
+  <h1>Tareas</h1>
+  <div id="root"></div>
+
+  <script>
+    const tareas = [
+      { id: 1, titulo: "Aprender promesas", estado: "pendiente" },
+      { id: 2, titulo: "Practicar async/await", estado: "completada" },
+      { id: 3, titulo: "Hacer ejercicio", estado: "pendiente" }
+    ];
+
+    const root = document.getElementById('root');
+
+    function renderTasks() {
+      root.innerHTML = '';
+
+      const ul = document.createElement('ul');
+      ul.style.listStyle = 'none';
+      ul.style.padding = '0';
+      ul.style.margin = '0';
+
+      tareas.forEach(t => {
+        const li = document.createElement('li');
+        li.className = 'tarea' + (t.estado === 'completada' ? ' completada' : '');
+
+        const tituloSpan = document.createElement('span');
+        tituloSpan.className = 'titulo';
+        tituloSpan.textContent = t.titulo;
+
+        const estadoSpan = document.createElement('span');
+        estadoSpan.className = 'estado';
+        estadoSpan.textContent = t.estado;
+
+        const controls = document.createElement('div');
+        controls.className = 'controls';
+
+        const btnToggle = document.createElement('button');
+        btnToggle.textContent = t.estado === 'pendiente' ? 'Marcar completada' : 'Marcar pendiente';
+        btnToggle.onclick = () => {
+          toggleEstado(t.id);
+        };
+
+        const btnEliminar = document.createElement('button');
+        btnEliminar.textContent = 'Eliminar';
+        btnEliminar.onclick = () => {
+          eliminarTarea(t.id);
+        };
+
+        controls.appendChild(btnToggle);
+        controls.appendChild(btnEliminar);
+
+        li.appendChild(tituloSpan);
+        li.appendChild(estadoSpan);
+        li.appendChild(controls);
+
+        ul.appendChild(li);
+      });
+
+      if (tareas.length === 0) {
+        const empty = document.createElement('p');
+        empty.textContent = 'No hay tareas.';
+        root.appendChild(empty);
+      } else {
+        root.appendChild(ul);
+      }
+    }
+
+    function toggleEstado(id) {
+      const tarea = tareas.find(t => t.id === id);
+      if (!tarea) return;
+      tarea.estado = tarea.estado === 'pendiente' ? 'completada' : 'pendiente';
+      renderTasks();
+    }
+
+    function eliminarTarea(id) {
+      const index = tareas.findIndex(t => t.id === id);
+      if (index === -1) return;
+      tareas.splice(index, 1);
+      renderTasks();
+    }
+
+    renderTasks();
+  </script>
+
+</body>
+</html>
